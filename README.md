@@ -18,4 +18,4 @@ Mercato is a lightweight In-App Purchases (StoreKit 2) library for iOS, tvOS, wa
 
 ## License
 
-TPInAppReceipt is released under an MIT license. See [LICENSE](https://github.com/tikhop/TPInAppReceipt/blob/master/LICENSE) for more information.
+Mercato is released under an MIT license. See [LICENSE](https://github.com/tikhop/TPInAppReceipt/blob/master/LICENSE) for more information.

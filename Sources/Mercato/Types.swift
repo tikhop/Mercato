@@ -5,15 +5,9 @@
 //  Created by Pavel Tikhonenko on 09.10.2021.
 //
 
-import Foundation
+
 import StoreKit
 
-/// Purchase result
-public enum PurchaseResult
-{
-	case success(purchase: Purchase)
-	case error(error: MercatoError)
-}
 
 public struct Purchase
 {
@@ -33,6 +27,11 @@ extension Purchase
 	var quantity: Int
 	{
 		transaction.purchasedQuantity
+	}
+	
+	func finish() async
+	{
+		await transaction.finish()
 	}
 	
 //	init(product: Product, transaction: Transaction, needsFinishTransaction: Bool)
