@@ -12,14 +12,15 @@ public class Mercato {
 	
     public init()
 	{
+		
     }
-	
-	
+		
 	func listenForTransactions(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?)
 	{
-		let task = Task.detached {
-			//Iterate through any transactions which didn't come from a direct call to `purchase()`.
-			for await result in Transaction.updates {
+		let task = Task.detached
+		{
+			for await result in Transaction.updates
+			{
 				do {
 					let transaction = try checkVerified(result)
 					
@@ -107,6 +108,11 @@ extension Mercato
 								  simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox)
 	}
 	
+	public static func restorePurchases() async throws
+	{
+		try await AppStore.sync()
+	}
+	
 	@available(watchOS, unavailable)
 	@available(tvOS, unavailable)
 	public static func beginRefundProcess(for product: Product, in scene: UIWindowScene) async throws
@@ -121,9 +127,13 @@ extension Mercato
 		try await shared.beginRefundProcess(for: productID, in: scene)
 	}
 	
-	public static func restorePurchases() async throws
+	@available(iOS 15.0, *)
+	@available(macOS, unavailable)
+	@available(watchOS, unavailable)
+	@available(tvOS, unavailable)
+	public static func showManageSubscriptions(in scene: UIWindowScene) async throws
 	{
-		try await AppStore.sync()
+		try await AppStore.showManageSubscriptions(in: scene)
 	}
 }
 
