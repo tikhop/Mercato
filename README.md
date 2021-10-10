@@ -48,6 +48,27 @@ In any swift file you'd like to use Mercato, import the framework with `import M
 Usage
 -------------
 
+#### Listen for transaction updates
+
+Start transaction update listener as soon as your app launches so you don't miss a single transaction.
+
+```swift
+do {
+  /// Initialize receipt
+  let receipt = try InAppReceipt.localReceipt() 
+  // let receipt = try InAppReceipt() // Returns local receipt 
+  
+  // let receiptData: Data = ...
+  // let receipt = try InAppReceipt.receipt(from: receiptData)
+  
+} catch {
+  print(error)
+}
+
+#### Fetching products
+#### Purchase a product 
+#### Offering in-app refunds
+
 ## Essential Reading
 * [Apple - Meet StoreKit 2](https://developer.apple.com/videos/play/wwdc2021/10114/)
 * [Apple - In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
@@ -56,4 +77,4 @@ Usage
 
 ## License
 
-Mercato is released under an MIT license. See [LICENSE](https://github.com/tikhop/TPInAppReceipt/blob/master/LICENSE) for more information.
+Mercato is released under an MIT license. See [LICENSE](https://github.com/tikhop/Mercato/blob/master/LICENSE) for more information.
