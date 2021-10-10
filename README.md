@@ -50,29 +50,53 @@ Usage
 
 #### Listen for transaction updates
 
-Start transaction update listener as soon as your app launches so you don't miss a single transaction.
+Start transaction update listener as soon as your app launches so you don't miss a single transaction. This is important, for example, to handle transactions that may have occured after `purchase` returns, like an adult approving a child's purchase request or a purchase made on another device.
+
+> If your app has unfinished transactions, you receive them immediately after the app launches
 
 ```swift
-do {
-  /// Initialize receipt
-  let receipt = try InAppReceipt.localReceipt() 
-  // let receipt = try InAppReceipt() // Returns local receipt 
-  
-  // let receiptData: Data = ...
-  // let receipt = try InAppReceipt.receipt(from: receiptData)
-  
-} catch {
-  print(error)
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
+{
+	Mercato.listenForTransactions(finishAutomatically: false) { transaction in
+		//Deliver content to the user.
+		
+		//Finish transaction
+		await transaction.finish()
+	}
+	
+	return true
 }
+```
 
 #### Fetching products
+
+```swift
+do
+{
+	let productIds: Set<String> = ["com.test.product.1", "com.test.product.2", "com.test.product.3"]
+	let products = try await Mercato.retrieveProducts(productIds: productIds)
+	
+	//Show products to the user
+}catch{
+	//Handle errors
+}
+```
+
 #### Purchase a product 
+
+```swift
+try await Mercato.purchase(product: product, quantity: 1, atomically: false, appAccountToken: nil, simulatesAskToBuyInSandbox: false)
+```
+
 #### Offering in-app refunds
+
+```swift
+try await Mercato.beginRefundProcess(for: product, in: windowScene)
+```
 
 ## Essential Reading
 * [Apple - Meet StoreKit 2](https://developer.apple.com/videos/play/wwdc2021/10114/)
 * [Apple - In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
-* [WWDC by Sundell - Working With In-App Purchases in StoreKit 2](https://wwdcbysundell.com/2021/working-with-in-app-purchases-in-storekit2/)
 * [WWDC by Sundell - Working With In-App Purchases in StoreKit 2](https://wwdcbysundell.com/2021/working-with-in-app-purchases-in-storekit2/)
 
 ## License

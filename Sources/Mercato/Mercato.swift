@@ -14,6 +14,7 @@ public class Mercato {
 	{
     }
 	
+	
 	func listenForTransactions(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?)
 	{
 		let task = Task.detached {
@@ -44,16 +45,16 @@ public class Mercato {
 	}
 	
 	@discardableResult
-	public func purchase(product: Product, quantity: Int = 1, atomically: Bool = true, appAccountToken: UUID? = nil, simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase
+	public func purchase(product: Product, quantity: Int = 1, finishAutomatically: Bool = true, appAccountToken: UUID? = nil, simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase
 	{
-		try await purchaseController.makePurchase(product: product, quantity: quantity, atomically: atomically, appAccountToken: appAccountToken, simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox)
+		try await purchaseController.makePurchase(product: product, quantity: quantity, finishAutomatically: finishAutomatically, appAccountToken: appAccountToken, simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox)
 	}
 	
 	@available(watchOS, unavailable)
 	@available(tvOS, unavailable)
-	func beginRefundProcess(for productID: String, in scene: UIWindowScene) async -> Result<String, Error>
+	func beginRefundProcess(for productID: String, in scene: UIWindowScene) async throws
 	{
-		guard case .verified(let transaction) = await Transaction.latest(for: productID) else { return .failure(MercatoError.failedVerification) }
+		guard case .verified(let transaction) = await Transaction.latest(for: productID) else { throw MercatoError.failedVerification }
 		
 		do {
 			let status = try await transaction.beginRefundRequest(in: scene)
@@ -61,15 +62,15 @@ public class Mercato {
 			switch status
 			{
 			case .userCancelled:
-				return .failure(MercatoError.userCancelledRefundProcess)
+				throw MercatoError.userCancelledRefundProcess
 			case .success:
-				return .success(productID)
+				break
 			@unknown default:
-				return .failure(MercatoError.genericError)
+				throw MercatoError.genericError
 			}
 		} catch {
 			//TODO: return a specific error
-			return .failure(error)
+			throw error
 		}
 	}
 	
@@ -92,31 +93,32 @@ extension Mercato
 		try await shared.retrieveProducts(productIds: productIds)
 	}
 	
+	@discardableResult
 	public static func purchase(product: Product,
 								quantity: Int = 1,
-								atomically: Bool = true,
+								finishAutomatically: Bool = true,
 								appAccountToken: UUID? = nil,
 								simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase
 	{
 		try await shared.purchase(product: product,
-										 quantity: quantity,
-										 atomically: atomically,
-										 appAccountToken: appAccountToken,
-										 simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox)
+								  quantity: quantity,
+								  finishAutomatically: finishAutomatically,
+								  appAccountToken: appAccountToken,
+								  simulatesAskToBuyInSandbox: simulatesAskToBuyInSandbox)
 	}
 	
 	@available(watchOS, unavailable)
 	@available(tvOS, unavailable)
-	public static func beginRefundProcess(for product: Product, in scene: UIWindowScene) async -> Result<String, Error>
+	public static func beginRefundProcess(for product: Product, in scene: UIWindowScene) async throws
 	{
-		await shared.beginRefundProcess(for: product.id, in: scene)
+		try await shared.beginRefundProcess(for: product.id, in: scene)
 	}
 	
 	@available(watchOS, unavailable)
 	@available(tvOS, unavailable)
-	public static func beginRefundProcess(for productID: String, in scene: UIWindowScene) async -> Result<String, Error>
+	public static func beginRefundProcess(for productID: String, in scene: UIWindowScene) async throws
 	{
-		await shared.beginRefundProcess(for: productID, in: scene)
+		try await shared.beginRefundProcess(for: productID, in: scene)
 	}
 	
 	public static func restorePurchases() async throws

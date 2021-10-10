@@ -10,7 +10,7 @@ import StoreKit
 
 class PurchaseController
 {
-	func makePurchase(product: Product, quantity: Int = 1, atomically: Bool = true, appAccountToken: UUID? = nil, simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase
+	func makePurchase(product: Product, quantity: Int = 1, finishAutomatically: Bool = true, appAccountToken: UUID? = nil, simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase
 	{
 		var options: Set<Product.PurchaseOption> = []
 		options.insert(Product.PurchaseOption.quantity(quantity))
@@ -28,12 +28,12 @@ class PurchaseController
 		case .success(let verification):
 			let transaction = try checkVerified(verification)
 			
-			if atomically
+			if finishAutomatically
 			{
 				await transaction.finish()
 			}
 			
-			return Purchase(product: product, transaction: transaction, needsFinishTransaction: atomically)
+			return Purchase(product: product, transaction: transaction, needsFinishTransaction: !finishAutomatically)
 		case .userCancelled:
 			throw MercatoError.purchaseCanceledByUser
 		case .pending:
