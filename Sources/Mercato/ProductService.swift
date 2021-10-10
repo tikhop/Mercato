@@ -17,7 +17,9 @@ class ProductService
 	{
 		do
 		{
-			return try await Product.products(for: productIds)
+			let products = try await Product.products(for: productIds)
+			cachedProducts = products
+			return products
 		}catch{
 			throw MercatoError.storeKit(error: error as! StoreKitError)
 		}
@@ -36,12 +38,6 @@ class ProductService
 		}
 		
 		let transaction = try checkVerified(result)
-		
-		//Ignore revoked transactions, they're no longer purchased.
-		
-		//For subscriptions, a user can upgrade in the middle of their subscription period. The lower service
-		//tier will then have the `isUpgraded` flag set and there will be a new transaction for the higher service
-		//tier. Ignore the lower service tier transactions which have been upgraded.
 		return transaction.revocationDate == nil && !transaction.isUpgraded
 	}
 }

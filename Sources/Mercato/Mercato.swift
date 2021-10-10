@@ -118,6 +118,11 @@ extension Mercato
 	{
 		await shared.beginRefundProcess(for: productID, in: scene)
 	}
+	
+	public static func restorePurchases() async throws
+	{
+		try await AppStore.sync()
+	}
 }
 
 func checkVerified<T>(_ result: VerificationResult<T>) throws -> T
