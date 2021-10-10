@@ -1,7 +1,7 @@
 import Foundation
 import StoreKit
 
-public typealias TransactionUpdate = ((Transaction) -> ())
+public typealias TransactionUpdate = ((Transaction) async -> ())
 
 public class Mercato {
 	
@@ -14,7 +14,7 @@ public class Mercato {
 	{
     }
 	
-	func listenForTransactions(atomically: Bool = true, updateBlock: TransactionUpdate?)
+	func listenForTransactions(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?)
 	{
 		let task = Task.detached {
 			//Iterate through any transactions which didn't come from a direct call to `purchase()`.
@@ -22,12 +22,12 @@ public class Mercato {
 				do {
 					let transaction = try checkVerified(result)
 					
-					if atomically
+					if finishAutomatically
 					{
 						await transaction.finish()
 					}
 					
-					updateBlock?(transaction)
+					await updateBlock?(transaction)
 				} catch {
 					print("Transaction failed verification")
 				}
@@ -82,9 +82,9 @@ extension Mercato
 {
 	fileprivate static let shared: Mercato = .init()
 	
-	public static func listenForTransactions(atomically: Bool = true, updateBlock: TransactionUpdate?)
+	public static func listenForTransactions(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?)
 	{
-		shared.listenForTransactions(atomically: atomically, updateBlock: updateBlock)
+		shared.listenForTransactions(finishAutomatically: finishAutomatically, updateBlock: updateBlock)
 	}
 	
 	public static func retrieveProducts(productIds: Set<String>) async throws -> [Product]
@@ -135,4 +135,3 @@ func checkVerified<T>(_ result: VerificationResult<T>) throws -> T
 		throw MercatoError.failedVerification
 	}
 }
-
