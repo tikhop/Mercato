@@ -135,7 +135,30 @@ extension Mercato
 	{
 		try await AppStore.showManageSubscriptions(in: scene)
 	}
+	
+	public static func activeSubscriptions(onlyRenewable: Bool = true) async throws -> [String]
+	{
+		var productIds: Set<String> = []
+		
+		for await result in Transaction.currentEntitlements
+		{
+			do {
+				let transaction = try checkVerified(result)
+				
+				if transaction.productType == .autoRenewable ||
+					(!onlyRenewable && transaction.productType == .nonRenewable)
+				{
+					productIds.insert(transaction.productID)
+				}
+			} catch {
+				throw error
+			}
+		}
+		
+		return Array(productIds)
+	}
 }
+
 
 func checkVerified<T>(_ result: VerificationResult<T>) throws -> T
 {
