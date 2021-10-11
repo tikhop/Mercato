@@ -94,6 +94,14 @@ try await Mercato.purchase(product: product, quantity: 1, atomically: false, app
 try await Mercato.beginRefundProcess(for: product, in: windowScene)
 ```
 
+#### Restore completed transactions
+
+ In general users won't need to restore completed transactions when your app is reinstalled or downloaded on a new device. Everything should automatically be fetched by StoreKit and stay up to date. In the rare case that a user thinks they should have a transaction but you don't see it, you have to provide UI in your app that allows users to initiate the sync. It should be very rare that a user needs to initiate a sync manually. Automatic synchronization should cover the majority of cases.
+  
+```swift
+try await Mercato.restorePurchases()
+```
+
 ## Essential Reading
 * [Apple - Meet StoreKit 2](https://developer.apple.com/videos/play/wwdc2021/10114/)
 * [Apple - In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
