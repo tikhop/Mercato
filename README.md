@@ -85,7 +85,7 @@ do
 #### Purchase a product 
 
 ```swift
-try await Mercato.purchase(product: product, quantity: 1, atomically: false, appAccountToken: nil, simulatesAskToBuyInSandbox: false)
+try await Mercato.purchase(product: product, quantity: 1, finishAutomatically: false, appAccountToken: nil, simulatesAskToBuyInSandbox: false)
 ```
 
 #### Offering in-app refunds
@@ -103,6 +103,7 @@ try await Mercato.restorePurchases()
 ```
 
 ## Essential Reading
+
 * [Apple - Meet StoreKit 2](https://developer.apple.com/videos/play/wwdc2021/10114/)
 * [Apple - In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
 * [WWDC by Sundell - Working With In-App Purchases in StoreKit 2](https://wwdcbysundell.com/2021/working-with-in-app-purchases-in-storekit2/)
