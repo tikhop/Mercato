@@ -12,7 +12,7 @@ Mercato 0.0.1
     //Finish transaction
     await transaction.finish()
   }
-```
+  ```
 
 * Fetch products for the given set of product's ids
   ```swift
