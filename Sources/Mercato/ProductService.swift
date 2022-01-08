@@ -10,17 +10,22 @@ import StoreKit
 
 class ProductService
 {
-	private var cachedProducts: [Product] = []
+
+    private var cachedProducts: [Product] = []
 	
 	@MainActor
 	public func retrieveProducts(productIds: Set<String>) async throws -> [Product]
 	{
 		do
 		{
+            if checkProductIdsMatchingCachedIds(productIds) {
+                return cachedProducts
+            }
 			let products = try await Product.products(for: productIds)
 			cachedProducts = products
+            
 			return products
-		}catch{
+		} catch {
 			throw MercatoError.storeKit(error: error as! StoreKitError)
 		}
 	}
@@ -40,4 +45,16 @@ class ProductService
 		let transaction = try checkVerified(result)
 		return transaction.revocationDate == nil && !transaction.isUpgraded
 	}
+}
+
+private extension ProductService
+{
+    func checkProductIdsMatchingCachedIds(_ productIds: Set<String>) -> Bool {
+        if cachedProducts.isEmpty {
+            return false
+        }
+        
+        let cachedProductIds = Set(cachedProducts.map(\.id))
+        return cachedProductIds == productIds
+    }
 }
