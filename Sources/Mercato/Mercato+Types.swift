@@ -18,17 +18,17 @@ public struct Purchase
 
 extension Purchase
 {
-	var productId: String
+	public var productId: String
 	{
 		transaction.productID
 	}
 	
-	var quantity: Int
+    public var quantity: Int
 	{
 		transaction.purchasedQuantity
 	}
 	
-	func finish() async
+    public func finish() async
 	{
 		await transaction.finish()
 	}
