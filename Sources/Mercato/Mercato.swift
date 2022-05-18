@@ -136,9 +136,9 @@ extension Mercato
 		try await AppStore.showManageSubscriptions(in: scene)
 	}
 	
-	public static func activeSubscriptions(onlyRenewable: Bool = true) async throws -> [String]
+	public static func activeSubscriptions(onlyRenewable: Bool = true) async throws -> [Transaction]
 	{
-		var productIds: Set<String> = []
+		var txs: [Transaction] = []
 		
 		for await result in Transaction.currentEntitlements
 		{
@@ -148,15 +148,20 @@ extension Mercato
 				if transaction.productType == .autoRenewable ||
 					(!onlyRenewable && transaction.productType == .nonRenewable)
 				{
-					productIds.insert(transaction.productID)
+                    txs.append(transaction)
 				}
 			} catch {
 				throw error
 			}
 		}
 		
-		return Array(productIds)
+		return Array(txs)
 	}
+    
+    public static func activeSubscriptionIds(onlyRenewable: Bool = true) async throws -> [String]
+    {
+        return try await activeSubscriptions(onlyRenewable: onlyRenewable).map { $0.productID}
+    }
 }
 
 
