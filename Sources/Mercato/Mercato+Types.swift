@@ -8,7 +8,19 @@
 
 import StoreKit
 
+//MARK: MercatoError
+public enum MercatoError: Error
+{
+    case storeKit(error: StoreKitError)
+    case purchase(error: Product.PurchaseError)
+    case purchaseCanceledByUser
+    case userCancelledRefundProcess
+    case purchaseIsPending
+    case failedVerification
+    case genericError
+}
 
+//MARK: Purchase
 public struct Purchase
 {
 	public let product: Product

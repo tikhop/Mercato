@@ -8,7 +8,7 @@
 import Foundation
 import StoreKit
 
-class PurchaseController
+final class PurchaseController
 {
 	func makePurchase(product: Product, quantity: Int = 1, finishAutomatically: Bool = true, appAccountToken: UUID? = nil, simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase
 	{

@@ -3,7 +3,7 @@ import StoreKit
 
 public typealias TransactionUpdate = ((Transaction) async -> ())
 
-public class Mercato {
+public final class Mercato {
 	
 	private var purchaseController = PurchaseController()
 	private var productService = ProductService()

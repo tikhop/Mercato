@@ -8,9 +8,8 @@
 import Foundation
 import StoreKit
 
-class ProductService
+final class ProductService
 {
-
     private var cachedProducts: [Product] = []
 	
 	@MainActor
