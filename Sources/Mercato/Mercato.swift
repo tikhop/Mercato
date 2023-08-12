@@ -12,7 +12,7 @@ public final class Mercato {
 
     private var transactionUpdateListeners: [TransactionObserverHandler: TransactionObserver] = [:]
 
-    func listenForTransactionUpdates(updateBlock: TransactionUpdate) -> TransactionObserverHandler {
+    func listenForTransactionUpdates(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
         let handler = TransactionObserverHandler()
         let observer = TransactionObserver(handler: updateBlock)
         transactionUpdateListeners[handler] = observer
@@ -67,7 +67,7 @@ public final class Mercato {
 extension Mercato {
     fileprivate static let shared: Mercato = .init()
 
-    public static func listenForTransactionUpdates(updateBlock: TransactionUpdate) -> TransactionObserverHandler {
+    public static func listenForTransactionUpdates(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
         shared.listenForTransactionUpdates(updateBlock: updateBlock)
     }
 
