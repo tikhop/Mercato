@@ -1,8 +1,6 @@
 import Foundation
 import StoreKit
 
-public typealias TransactionUpdate = ((Transaction) async -> ())
-
 public final class Mercato {
 	
 	private var purchaseController = PurchaseController()
@@ -10,35 +8,22 @@ public final class Mercato {
 	
 	private var updateListenerTask: Task<(), Never>? = nil
 	
-    public init()
+    private var transactionUpdateListeners: [TransactionObserverHandler: TransactionObserver] = [:]
+		
+	func listenForTransactionUpdates(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?) -> TransactionObserverHandler
 	{
-		
-    }
-		
-	func listenForTransactions(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?)
-	{
-		let task = Task.detached
-		{
-			for await result in Transaction.updates
-			{
-				do {
-					let transaction = try checkVerified(result)
-					
-					if finishAutomatically
-					{
-						await transaction.finish()
-					}
-					
-					await updateBlock?(transaction)
-				} catch {
-					print("Transaction failed verification")
-				}
-			}
-		}
-		
-		self.updateListenerTask = task
+        let handler = TransactionObserverHandler()
+        let observer = TransactionObserver(handler: updateBlock)
+        transactionUpdateListeners[handler] = observer
+        return handler
 	}
 	
+    func removeListenerForTransactionUpdates(_ handler: TransactionObserverHandler) {
+        let observer = transactionUpdateListeners[handler]
+        observer?.stop()
+        transactionUpdateListeners[handler] = nil
+    }
+    
 	//TODO: throw an error if productId are invalid
 	public func retrieveProducts(productIds: Set<String>) async throws -> [Product]
 	{
@@ -84,10 +69,15 @@ extension Mercato
 {
 	fileprivate static let shared: Mercato = .init()
 	
-	public static func listenForTransactions(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?)
+	public static func listenForTransactionUpdates(finishAutomatically: Bool = true, updateBlock: TransactionUpdate?) -> TransactionObserverHandler
 	{
-		shared.listenForTransactions(finishAutomatically: finishAutomatically, updateBlock: updateBlock)
+		return shared.listenForTransactionUpdates(finishAutomatically: finishAutomatically, updateBlock: updateBlock)
 	}
+    
+    public static func removeListenerForTransactionUpdates(_ handler: TransactionObserverHandler)
+    {
+        shared.removeListenerForTransactionUpdates(handler)
+    }
 	
 	public static func retrieveProducts(productIds: Set<String>) async throws -> [Product]
 	{

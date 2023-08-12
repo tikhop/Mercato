@@ -8,16 +8,20 @@
 import Foundation
 import StoreKit
 
-final class TransactionObserver {
+public typealias TransactionObserverHandler = UUID
+public typealias TransactionUpdate = ((Transaction) async -> ())
+
+public final class TransactionObserver {
     private var updates: Task<Void, Never>? = nil
-    private let handler: TransactionUpdate?
+    private var handler: TransactionUpdate?
     
     init(handler: TransactionUpdate?) {
         self.handler = handler
         updates = newTransactionListenerTask()
     }
     
-    deinit {
+    public func stop() {
+        handler = nil
         updates?.cancel()
     }
     
@@ -36,19 +40,10 @@ final class TransactionObserver {
             return nil
         }
         
-        if let revocationDate = transaction.revocationDate {
-            // Remove access to the product identified by transaction.productID.
-            // Transaction.revocationReason provides details about the revoked transaction.
-            return nil
-        } else if let expirationDate = transaction.expirationDate, expirationDate < Date() {
-            // NOP. This subscription is expired.
-            return nil
-        } else if transaction.isUpgraded {
-            // NOP. There is an active transaction for a higher level of service.
-            return nil
-        } else {
-            return transaction
-        }
+        return transaction
     }
     
+    deinit {
+        updates?.cancel()
+    }
 }
