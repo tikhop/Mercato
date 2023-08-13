@@ -4,17 +4,17 @@ import StoreKit
 // MARK: - Mercato
 
 public final class Mercato {
-
     private var purchaseController = PurchaseController()
     private var productService = ProductService()
 
-    private var updateListenerTask: Task<(), Never>? = nil
-
     private var transactionUpdateListeners: [TransactionObserverHandler: TransactionObserver] = [:]
-
+    private var allTransactionListeners: [TransactionObserverHandler: TransactionObserver] = [:]
+    private var unfinishedTransactionListeners: [TransactionObserverHandler: TransactionObserver] = [:]
+    private var currentEntitlementListeners: [TransactionObserverHandler: TransactionObserver] = [:]
+    
     func listenForTransactionUpdates(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
         let handler = TransactionObserverHandler()
-        let observer = TransactionObserver(handler: updateBlock)
+        let observer = TransactionObserver(transactionSequence: Transaction.updates, handler: updateBlock)
         transactionUpdateListeners[handler] = observer
         return handler
     }
@@ -24,7 +24,46 @@ public final class Mercato {
         observer?.stop()
         transactionUpdateListeners[handler] = nil
     }
+    
+    func listenForAllTransaction(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
+        let handler = TransactionObserverHandler()
+        let observer = TransactionObserver(transactionSequence: Transaction.all, handler: updateBlock)
+        allTransactionListeners[handler] = observer
+        return handler
+    }
 
+    func removeListenerForAllTransaction(_ handler: TransactionObserverHandler) {
+        let observer = transactionUpdateListeners[handler]
+        observer?.stop()
+        allTransactionListeners[handler] = nil
+    }
+
+    func listenForUnfinishedTransaction(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
+        let handler = TransactionObserverHandler()
+        let observer = TransactionObserver(transactionSequence: Transaction.unfinished, handler: updateBlock)
+        unfinishedTransactionListeners[handler] = observer
+        return handler
+    }
+
+    func removeListenerForUnfinishedTransaction(_ handler: TransactionObserverHandler) {
+        let observer = transactionUpdateListeners[handler]
+        observer?.stop()
+        unfinishedTransactionListeners[handler] = nil
+    }
+    
+    func listenForCurrentEntitlement(onlyRenewable: Bool, updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
+        let handler = TransactionObserverHandler()
+        let observer = CurrentEntitlementObserver(onlyRenewable: onlyRenewable, handler: updateBlock)
+        currentEntitlementListeners[handler] = observer
+        return handler
+    }
+
+    func removeListenerCurrentEntitlement(_ handler: TransactionObserverHandler) {
+        let observer = transactionUpdateListeners[handler]
+        observer?.stop()
+        currentEntitlementListeners[handler] = nil
+    }
+    
     // TODO: throw an error if productId are invalid
     public func retrieveProducts(productIds: Set<String>) async throws -> [Product] {
         try await productService.retrieveProducts(productIds: productIds)
@@ -59,8 +98,24 @@ public final class Mercato {
         }
     }
 
+    private func cleanUp(listeners: [TransactionObserverHandler: TransactionObserver]) {
+        for item in listeners {
+            item.value.stop()
+        }
+    }
+    
     deinit {
-        updateListenerTask?.cancel()
+        cleanUp(listeners: transactionUpdateListeners)
+        transactionUpdateListeners.removeAll()
+        
+        cleanUp(listeners: allTransactionListeners)
+        allTransactionListeners.removeAll()
+        
+        cleanUp(listeners: unfinishedTransactionListeners)
+        unfinishedTransactionListeners.removeAll()
+        
+        cleanUp(listeners: currentEntitlementListeners)
+        currentEntitlementListeners.removeAll()
     }
 }
 
@@ -75,10 +130,34 @@ extension Mercato {
         shared.removeListenerForTransactionUpdates(handler)
     }
 
+    public static func listenForAllTransaction(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
+        shared.listenForAllTransaction(updateBlock: updateBlock)
+    }
+
+    public static func removeListenerForAllTransaction(_ handler: TransactionObserverHandler) {
+        shared.removeListenerForAllTransaction(handler)
+    }
+    
+    public static func listenForUnfinishedTransaction(updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
+        shared.listenForUnfinishedTransaction(updateBlock: updateBlock)
+    }
+
+    public static func removeListenerForUnfinishedTransaction(_ handler: TransactionObserverHandler) {
+        shared.removeListenerForUnfinishedTransaction(handler)
+    }
+    
+    public static func listenForCurrentEntitlement(onlyRenewable: Bool, updateBlock: @escaping TransactionUpdate) -> TransactionObserverHandler {
+        shared.listenForCurrentEntitlement(onlyRenewable: onlyRenewable, updateBlock: updateBlock)
+    }
+
+    public static func removeListenerCurrentEntitlement(_ handler: TransactionObserverHandler) {
+        shared.removeListenerCurrentEntitlement(handler)
+    }
+    
     public static func retrieveProducts(productIds: Set<String>) async throws -> [Product] {
         try await shared.retrieveProducts(productIds: productIds)
     }
-
+    
     @discardableResult
     public static func purchase(product: Product,
                                 quantity: Int = 1,
@@ -114,29 +193,6 @@ extension Mercato {
     @available(tvOS, unavailable)
     public static func showManageSubscriptions(in scene: UIWindowScene) async throws {
         try await AppStore.showManageSubscriptions(in: scene)
-    }
-
-    public static func activeSubscriptions(onlyRenewable: Bool = true) async throws -> [Transaction] {
-        var txs: [Transaction] = []
-
-        for await result in Transaction.currentEntitlements {
-            do {
-                let transaction = try checkVerified(result)
-
-                if transaction.productType == .autoRenewable ||
-                    (!onlyRenewable && transaction.productType == .nonRenewable) {
-                    txs.append(transaction)
-                }
-            } catch {
-                throw error
-            }
-        }
-
-        return Array(txs)
-    }
-
-    public static func activeSubscriptionIds(onlyRenewable: Bool = true) async throws -> [String] {
-        try await activeSubscriptions(onlyRenewable: onlyRenewable).map { $0.productID }
     }
 }
 

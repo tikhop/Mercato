@@ -8,7 +8,7 @@
 import Foundation
 import StoreKit
 
-final class PurchaseController {
+actor PurchaseController {
     func makePurchase(product: Product, quantity: Int = 1, finishAutomatically: Bool = true, appAccountToken: UUID? = nil,
                       simulatesAskToBuyInSandbox: Bool = false) async throws -> Purchase {
         var options: Set<Product.PurchaseOption> = []
@@ -38,6 +38,4 @@ final class PurchaseController {
             throw MercatoError.genericError
         }
     }
-
-
 }

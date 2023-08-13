@@ -10,10 +10,9 @@ import StoreKit
 
 // MARK: - ProductService
 
-final class ProductService {
+actor ProductService {
     private var cachedProducts: [Product] = []
 
-    @MainActor
     public func retrieveProducts(productIds: Set<String>) async throws -> [Product] {
         do {
             if checkProductIdsMatchingCachedIds(productIds) {

@@ -1,30 +1,23 @@
 //
 //  File.swift
+//  
 //
-//
-//  Created by tkhp on 10.11.2022.
+//  Created by PT on 8/13/23.
 //
 
-import Foundation
 import StoreKit
 
-public typealias TransactionObserverHandler = UUID
-public typealias TransactionUpdate = (Transaction) async -> ()
-
-// MARK: - TransactionObserver
-
-class TransactionObserver {
+public final class CurrentEntitlementObserver: TransactionObserver {
     private var updates: Task<Void, Never>? = nil
     private var handler: TransactionUpdate?
 
-    init(transactionSequence: Transaction.Transactions, handler: TransactionUpdate?) {
-        self.handler = handler
-        self.updates = newTransactionListenerTask(sequence: transactionSequence)
-    }
-
-    public func stop() {
-        handler = nil
-        updates?.cancel()
+    init(onlyRenewable: Bool, handler: @escaping TransactionUpdate) {
+        super.init(transactionSequence: Transaction.currentEntitlements) { tx in
+            if tx.productType == .autoRenewable ||
+                (!onlyRenewable && tx.productType == .nonRenewable) {
+                await handler(tx)
+            }
+        }
     }
 
     private func newTransactionListenerTask(sequence: Transaction.Transactions) -> Task<Void, Never> {
