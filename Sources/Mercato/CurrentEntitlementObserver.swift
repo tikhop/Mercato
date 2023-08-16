@@ -7,7 +7,7 @@
 
 import StoreKit
 
-public final class CurrentEntitlementObserver: TransactionObserver {
+final class CurrentEntitlementObserver: TransactionObserver {
     private var updates: Task<Void, Never>? = nil
     private var handler: TransactionUpdate?
 
