@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Mercato",
     platforms: [
-        .iOS(.v15), .tvOS(.v15), .watchOS("8.0"),
+        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("12.3"), .visionOS(.v1)
     ],
     products: [
         .library(

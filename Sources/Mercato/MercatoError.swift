@@ -30,23 +30,11 @@ extension MercatoError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .storeKit(error: let error):
-            if #available(iOS 15.4, *) {
-                return error.errorDescription
-            } else {
-                return error.localizedDescription
-            }
+            return error.errorDescription
         case .purchase(error: let error):
-            if #available(iOS 15.4, *) {
-                return error.errorDescription
-            } else {
-                return error.localizedDescription
-            }
+            return error.errorDescription
         case .refund(error: let error):
-            if #available(iOS 15.4, *) {
-                return error.errorDescription
-            } else {
-                return error.localizedDescription
-            }
+            return error.errorDescription
         case .canceledByUser:
             return "This error happens when user cancels purchase flow"
         case .purchaseIsPending:
@@ -58,3 +46,4 @@ extension MercatoError: LocalizedError {
         }
     }
 }
+

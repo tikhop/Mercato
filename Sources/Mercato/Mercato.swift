@@ -1,5 +1,13 @@
 import StoreKit
 
+#if canImport(AppKit)
+import AppKit
+public typealias DisplayContext = NSViewController
+#elseif os(iOS)
+import class UIKit.UIWindowScene
+public typealias DisplayContext = UIWindowScene
+#endif
+
 extension Mercato {
 
     /// Promotional offer for a purchase.
@@ -173,53 +181,6 @@ public final class Mercato: Sendable {
         return await product.isEligibleForIntroOffer
     }
 
-    /// Initiates the refund process for a specified product within a given `UIWindowScene`.
-    ///
-    /// This function attempts to begin a refund request for a transaction associated with the given product ID.
-    /// It handles different refund request outcomes, including user cancellation, success, and unknown errors.
-    /// The function is asynchronous and can throw errors if verification or the refund process fails.
-    ///
-    /// - Parameters:
-    ///   - productID: The identifier of the product for which the refund process is being requested.
-    ///   - scene: The `UIWindowScene` within which the refund request will be displayed to the user.
-    ///
-    /// - Throws:
-    ///   - `MercatoError.failedVerification`: If the transaction cannot be verified.
-    ///   - `MercatoError.canceledByUser`: If the user cancels the refund request.
-    ///   - `MercatoError.unknown(error:)`: If an unknown error occurs during the refund process.
-    ///   - `MercatoError.refund(error:)`: If a `Transaction.RefundRequestError` occurs during the refund process.
-    ///   - `MercatoError.storeKit(error:)`: If a `StoreKitError` occurs during the refund process.
-    ///
-    /// - Availability:
-    ///   - Not available on watchOS or tvOS.
-    ///
-    /// - Returns:
-    ///   No return value. The function will either complete successfully or throw an error.
-    @available(watchOS, unavailable)
-    @available(watchOS, unavailable)
-    @available(tvOS, unavailable)
-    func beginRefundProcess(for productID: String, in scene: UIWindowScene) async throws {
-        guard case .verified(let transaction) = await Transaction.latest(for: productID) else { throw MercatoError.failedVerification }
-
-        do {
-            let status = try await transaction.beginRefundRequest(in: scene)
-
-            switch status {
-            case .userCancelled:
-                throw MercatoError.canceledByUser
-            case .success:
-                break
-            @unknown default:
-                throw MercatoError.unknown(error: nil)
-            }
-        } catch let error as Transaction.RefundRequestError {
-            throw MercatoError.refund(error: error)
-        } catch let error as StoreKitError {
-            throw MercatoError.storeKit(error: error)
-        } catch {
-            throw MercatoError.unknown(error: error)
-        }
-    }
 }
 
 // MARK: - Mercato: Purchase
@@ -404,31 +365,6 @@ public extension Mercato {
         try await AppStore.sync()
     }
 
-    /// Displays the subscription management interface for the user within the specified `UIWindowScene`.
-    ///
-    /// This function presents the App Store's manage subscriptions screen, allowing the user to view and manage their active subscriptions.
-    /// It is asynchronous and throws errors if there are issues invoking the subscription management screen.
-    ///
-    /// - Parameters:
-    ///   - scene: The `UIWindowScene` within which the subscription management interface will be presented.
-    ///
-    /// - Throws:
-    ///   - An error if the subscription management interface could not be presented.
-    ///
-    /// - Availability:
-    ///   - Available on iOS 15.0 and later.
-    ///   - Not available on macOS, watchOS, or tvOS.
-    ///
-    /// - Returns:
-    ///   No return value. The function will either complete successfully or throw an error.
-    @available(iOS 15.0, *)
-    @available(macOS, unavailable)
-    @available(watchOS, unavailable)
-    @available(tvOS, unavailable)
-    static func showManageSubscriptions(in scene: UIWindowScene) async throws {
-        try await AppStore.showManageSubscriptions(in: scene)
-    }
-
     /// Requests product data from the App Store.
     /// - Parameter identifiers: A set of product identifiers to load from the App Store. If any
     ///                          identifiers are not found, they will be excluded from the return
@@ -451,35 +387,6 @@ public extension Mercato {
     /// - Parameter productId: The product identifier to check eligibility for.
     static func isEligibleForIntroOffer(for productId: String) async throws -> Bool {
         try await shared.isEligibleForIntroOffer(for: productId)
-    }
-
-    /// Initiates the refund process for a specified product within a given `UIWindowScene`.
-    ///
-    /// This function attempts to begin a refund request for a transaction associated with the given product ID.
-    /// It handles different refund request outcomes, including user cancellation, success, and unknown errors.
-    /// The function is asynchronous and can throw errors if verification or the refund process fails.
-    ///
-    /// - Parameters:
-    ///   - productID: The identifier of the product for which the refund process is being requested.
-    ///   - scene: The `UIWindowScene` within which the refund request will be displayed to the user.
-    ///
-    /// - Throws:
-    ///   - `MercatoError.failedVerification`: If the transaction cannot be verified.
-    ///   - `MercatoError.canceledByUser`: If the user cancels the refund request.
-    ///   - `MercatoError.unknown(error:)`: If an unknown error occurs during the refund process.
-    ///   - `MercatoError.refund(error:)`: If a `Transaction.RefundRequestError` occurs during the refund process.
-    ///   - `MercatoError.storeKit(error:)`: If a `StoreKitError` occurs during the refund process.
-    ///
-    /// - Availability:
-    ///   - Not available on watchOS or tvOS.
-    ///
-    /// - Returns:
-    ///   No return value. The function will either complete successfully or throw an error.
-    @available(watchOS, unavailable)
-    @available(watchOS, unavailable)
-    @available(tvOS, unavailable)
-    static func beginRefundProcess(for productID: String, in scene: UIWindowScene) async throws {
-        try await shared.beginRefundProcess(for: productID, in: scene)
     }
 
     /// Initiates a purchase for a specified productId with optional parameters.
@@ -555,3 +462,113 @@ public extension Mercato {
         try await shared.purchase(product: product, options: options, finishAutomatically: finishAutomatically)
     }
 }
+
+#if os(macOS) || os(iOS)
+@available(macOS 12.0, *)
+@available(iOS 15.0, visionOS 1.0, *)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
+public extension Mercato {
+    /// Initiates the refund process for a specified product within a given `UIWindowScene`.
+    ///
+    /// This function attempts to begin a refund request for a transaction associated with the given product ID.
+    /// It handles different refund request outcomes, including user cancellation, success, and unknown errors.
+    /// The function is asynchronous and can throw errors if verification or the refund process fails.
+    ///
+    /// - Parameters:
+    ///   - productID: The identifier of the product for which the refund process is being requested.
+    ///   - scene: The `UIWindowScene` within which the refund request will be displayed to the user.
+    ///
+    /// - Throws:
+    ///   - `MercatoError.failedVerification`: If the transaction cannot be verified.
+    ///   - `MercatoError.canceledByUser`: If the user cancels the refund request.
+    ///   - `MercatoError.unknown(error:)`: If an unknown error occurs during the refund process.
+    ///   - `MercatoError.refund(error:)`: If a `Transaction.RefundRequestError` occurs during the refund process.
+    ///   - `MercatoError.storeKit(error:)`: If a `StoreKitError` occurs during the refund process.
+    ///
+    /// - Availability:
+    ///   - Not available on watchOS or tvOS.
+    ///
+    /// - Returns:
+    ///   No return value. The function will either complete successfully or throw an error.
+    @available(macOS 12.0, *)
+    @available(iOS 15.0, visionOS 1.0, *)
+    @available(watchOS, unavailable)
+    @available(tvOS, unavailable)
+    func beginRefundProcess(for productID: String, in displayContext: DisplayContext) async throws {
+        guard case .verified(let transaction) = await Transaction.latest(for: productID) else { throw MercatoError.failedVerification }
+
+        do {
+            let status = try await transaction.beginRefundRequest(in: displayContext)
+
+            switch status {
+            case .userCancelled:
+                throw MercatoError.canceledByUser
+            case .success:
+                break
+            @unknown default:
+                throw MercatoError.unknown(error: nil)
+            }
+        } catch let error as Transaction.RefundRequestError {
+            throw MercatoError.refund(error: error)
+        } catch let error as StoreKitError {
+            throw MercatoError.storeKit(error: error)
+        } catch {
+            throw MercatoError.unknown(error: error)
+        }
+    }
+
+    @available(macOS 12.0, *)
+    @available(iOS 15.0, visionOS 1.0, *)
+    @available(watchOS, unavailable)
+    @available(tvOS, unavailable)
+    static func beginRefundProcess(for productID: String, in displayContext: DisplayContext) async throws {
+        try await shared.beginRefundProcess(for: productID, in: displayContext)
+    }
+}
+#endif
+
+// MARK: Manage Subscription
+
+#if os(iOS)
+@available(iOS 15.0, visionOS 1.0, *)
+@available(macOS, unavailable)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
+public extension Mercato {
+    /// Displays the subscription management interface for the user within the specified `UIWindowScene`.
+    ///
+    /// This function presents the App Store's manage subscriptions screen, allowing the user to view and manage their active subscriptions.
+    /// It is asynchronous and throws errors if there are issues invoking the subscription management screen.
+    ///
+    /// - Parameters:
+    ///   - scene: The `UIWindowScene` within which the subscription management interface will be presented.
+    ///
+    /// - Throws:
+    ///   - An error if the subscription management interface could not be presented.
+    ///
+    /// - Availability:
+    ///   - Available on iOS 15.0 and later.
+    ///   - Not available on macOS, watchOS, or tvOS.
+    ///
+    /// - Returns:
+    ///   No return value. The function will either complete successfully or throw an error.
+    @available(iOS 15.0, visionOS 1.0, *)
+    @available(macOS, unavailable)
+    @available(watchOS, unavailable)
+    @available(tvOS, unavailable)
+    @MainActor
+    static func showManageSubscriptions(in scene: UIWindowScene) async throws {
+        try await AppStore.showManageSubscriptions(in: scene)
+    }
+
+    @available(iOS 17.0, visionOS 1.0, *)
+    @available(macOS, unavailable)
+    @available(watchOS, unavailable)
+    @available(tvOS, unavailable)
+    @MainActor
+    static func showManageSubscriptions(in scene: UIWindowScene, subscriptionGroupID: String) async throws {
+        try await AppStore.showManageSubscriptions(in: scene, subscriptionGroupID: subscriptionGroupID)
+    }
+}
+#endif
