@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+Mercato 1.0.0
+---------
+
+### Added
+
+### Updated
+
+### Fixed
+
 Mercato 0.0.1
 ---------
 
