@@ -1,0 +1,15 @@
+{
+  "originHash" : "7e181c5637777fb3695a855d5045c2de4acd9d75d8e809ce1dc44a6fb426d2a7",
+  "pins" : [
+    {
+      "identity" : "mercato",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tikhop/Mercato",
+      "state" : {
+        "revision" : "51cc7ec0fe7347d4cb92c00f9566d289f276d64c",
+        "version" : "0.0.3"
+      }
+    }
+  ],
+  "version" : 3
+}

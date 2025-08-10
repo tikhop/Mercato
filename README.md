@@ -5,109 +5,133 @@
 # Mercato
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://mit-license.org)
-[![Platform](http://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS-lightgrey.svg?style=flat)](https://developer.apple.com/resources/)
-[![Language](https://img.shields.io/badge/swift-5.5-orange.svg)](https://developer.apple.com/swift)
+[![Platform](http://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20visionOS-lightgrey.svg?style=flat)](https://developer.apple.com/resources/)
+[![Swift](https://img.shields.io/badge/swift-5.10-orange.svg)](https://developer.apple.com/swift)
 
-Mercato is a lightweight In-App Purchases (StoreKit 2) library for iOS, tvOS, watchOS, macOS, and Mac Catalyst.
+StoreKit 2 wrapper for In-App Purchases.
 
-Installation
-------------
+## Installation
 
 ### Swift Package Manager
 
-To integrate using Apple's Swift package manager, add the following as a dependency to your `Package.swift`:
-
 ```swift
-.package(url: "https://github.com/tikhop/Mercato.git", .upToNextMajor(from: "0.0.1"))
+.package(url: "https://github.com/tikhop/Mercato.git", .upToNextMajor(from: "1.0.0"))
 ```
 
-Then, specify `"Mercato"` as a dependency of the Target in which you wish to use Mercato.
+## Requirements
 
-Lastly, run the following command:
-```swift
-swift package update
-```
+- Swift 5.10+
+- iOS 15.4+ / macOS 12.3+ / tvOS 17.0+ / watchOS 10.0+ / visionOS 1.0+
 
-### CocoaPods
+## Usage
 
-In progress...
-
-Then, run the following command:
-
-```bash
-$ pod install
-```
-
-In any swift file you'd like to use Mercato, import the framework with `import Mercato`.
-
-### Requirements
-
-- iOS 15.0 / OSX 12.0 / watchOS 8.0
-- Swift 5.5
-
-Usage
--------------
-
-#### Listen for transaction updates
-
-Start transaction update listener as soon as your app launches so you don't miss a single transaction. This is important, for example, to handle transactions that may have occured after `purchase` returns, like an adult approving a child's purchase request or a purchase made on another device.
-
-> If your app has unfinished transactions, you receive them immediately after the app launches
+### Basic Purchase
 
 ```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
-{
-	Mercato.listenForTransactions(finishAutomatically: false) { transaction in
-		//Deliver content to the user.
-		
-		//Finish transaction
-		await transaction.finish()
-	}
-	
-	return true
+import Mercato
+
+// Fetch products
+let products = try await Mercato.retrieveProducts(
+    productIds: ["com.app.premium", "com.app.subscription"]
+)
+
+// Purchase
+let purchase = try await Mercato.purchase(
+    product: product,
+    finishAutomatically: false
+)
+
+// Deliver content and finish
+grantAccess(for: purchase.productId)
+await purchase.finish()
+```
+
+### Transaction Monitoring
+
+```swift
+// Current entitlements
+for await result in Mercato.currentEntitlements {
+    let transaction = try result.payload
+    // Active subscriptions and non-consumables
+}
+
+// Live updates
+for await result in Mercato.updates {
+    let transaction = try result.payload
+    await processTransaction(transaction)
+    await transaction.finish()
 }
 ```
 
-#### Fetching products
+### Subscription Features
 
 ```swift
-do
-{
-	let productIds: Set<String> = ["com.test.product.1", "com.test.product.2", "com.test.product.3"]
-	let products = try await Mercato.retrieveProducts(productIds: productIds)
-	
-	//Show products to the user
-}catch{
-	//Handle errors
+// Check eligibility
+if await product.isEligibleForIntroOffer {
+    // Show intro pricing
+}
+
+// Product info
+product.localizedPrice        // "$9.99"
+product.localizedPeriod      // "1 month"
+product.hasTrial             // true/false
+product.priceInDay           // 0.33
+```
+
+### Purchase Options
+
+```swift
+let options = Mercato.PurchaseOptionsBuilder()
+    .setQuantity(3)
+    .setPromotionalOffer(offer)
+    .setAppAccountToken(token)
+    .build()
+
+let purchase = try await Mercato.purchase(
+    product: product,
+    options: options,
+    finishAutomatically: false
+)
+```
+
+
+### Error Handling
+
+```swift
+do {
+    let purchase = try await Mercato.purchase(product: product)
+} catch MercatoError.canceledByUser {
+    // User canceled
+} catch MercatoError.purchaseIsPending {
+    // Ask to Buy
+} catch MercatoError.productUnavailable {
+    // Product not found
 }
 ```
 
-#### Purchase a product 
+### Utilities
 
 ```swift
-try await Mercato.purchase(product: product, quantity: 1, finishAutomatically: false, appAccountToken: nil, simulatesAskToBuyInSandbox: false)
+// Check purchase status
+let isPurchased = try await Mercato.isPurchased("com.app.premium")
+
+// Get latest transaction
+if let result = await Mercato.latest(for: productId) {
+    let transaction = try result.payload
+}
+
+// Sync purchases (rarely needed)
+try await Mercato.syncPurchases()
 ```
 
-#### Offering in-app refunds
+## Documentation
 
-```swift
-try await Mercato.beginRefundProcess(for: product, in: windowScene)
-```
+See [Usage.md](Documentation/Usage.md) for complete documentation.
 
-#### Restore completed transactions
+## Contributing
 
- In general users won't need to restore completed transactions when your app is reinstalled or downloaded on a new device. Everything should automatically be fetched by StoreKit and stay up to date. In the rare case that a user thinks they should have a transaction but you don't see it, you have to provide UI in your app that allows users to initiate the sync. It should be very rare that a user needs to initiate a sync manually. Automatic synchronization should cover the majority of cases.
-  
-```swift
-try await Mercato.restorePurchases()
-```
-
-## Essential Reading
-
-* [Apple - Meet StoreKit 2](https://developer.apple.com/videos/play/wwdc2021/10114/)
-* [Apple - In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
-* [WWDC by Sundell - Working With In-App Purchases in StoreKit 2](https://wwdcbysundell.com/2021/working-with-in-app-purchases-in-storekit2/)
+Contributions are welcome. Please feel free to submit a Pull Request.
 
 ## License
 
-Mercato is released under an MIT license. See [LICENSE](https://github.com/tikhop/Mercato/blob/master/LICENSE) for more information.
+MIT. See [LICENSE](LICENSE) for details.

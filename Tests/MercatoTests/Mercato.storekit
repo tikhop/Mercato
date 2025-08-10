@@ -1,0 +1,561 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "C900C5D8",
+  "nonRenewingSubscriptions" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "NRS001",
+      "localizations" : [
+        {
+          "description" : "1 Month Pass",
+          "displayName" : "Monthly Pass",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.nonrenewing.month",
+      "referenceName" : "Non-Renewing Monthly",
+      "type" : "NonRenewingSubscription"
+    },
+    {
+      "displayPrice" : "49.99",
+      "familyShareable" : false,
+      "internalID" : "NRS002",
+      "localizations" : [
+        {
+          "description" : "1 Year Pass",
+          "displayName" : "Yearly Pass",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.nonrenewing.year",
+      "referenceName" : "Non-Renewing Yearly",
+      "type" : "NonRenewingSubscription"
+    }
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "CONS001",
+      "localizations" : [
+        {
+          "description" : "100 coins for your account",
+          "displayName" : "100 Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.consumable.coins.100",
+      "referenceName" : "100 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "CONS002",
+      "localizations" : [
+        {
+          "description" : "500 coins for your account",
+          "displayName" : "500 Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.consumable.coins.500",
+      "referenceName" : "500 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "CONS003",
+      "localizations" : [
+        {
+          "description" : "1000 coins for your account",
+          "displayName" : "1000 Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.consumable.coins.1000",
+      "referenceName" : "1000 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "CONS004",
+      "localizations" : [
+        {
+          "description" : "Extra life in game",
+          "displayName" : "Extra Life",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.consumable.life",
+      "referenceName" : "Extra Life",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : true,
+      "internalID" : "NONCONS001",
+      "localizations" : [
+        {
+          "description" : "Remove all ads from the app",
+          "displayName" : "Remove Ads",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.nonconsumable.removeads",
+      "referenceName" : "Remove Ads",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : true,
+      "internalID" : "NONCONS002",
+      "localizations" : [
+        {
+          "description" : "Unlock all premium features",
+          "displayName" : "Premium Unlock",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.nonconsumable.premium",
+      "referenceName" : "Premium Features",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "19.99",
+      "familyShareable" : true,
+      "internalID" : "NONCONS003",
+      "localizations" : [
+        {
+          "description" : "Lifetime access to all features",
+          "displayName" : "Lifetime Access",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.mercato.tests.nonconsumable.lifetime",
+      "referenceName" : "Lifetime Access",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : true,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : {
+          "index" : 2,
+          "type" : "generic"
+        },
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "BASIC_GROUP",
+      "localizations" : [
+
+      ],
+      "name" : "Basic",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "SUB_WEEK_01",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Weekly subscription",
+              "displayName" : "Weekly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Weekly Basic",
+          "subscriptionGroupID" : "BASIC_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "SUB_MONTH_01",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly subscription",
+              "displayName" : "Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Basic",
+          "subscriptionGroupID" : "BASIC_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "SUB_YEAR_01",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Annual subscription",
+              "displayName" : "Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Annual Basic",
+          "subscriptionGroupID" : "BASIC_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "id" : "TRIAL_GROUP",
+      "localizations" : [
+
+      ],
+      "name" : "Trial",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "SUB_WEEK_TRIAL",
+          "introductoryOffer" : {
+            "internalID" : "TRIAL_WEEK_01",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "localizations" : [
+            {
+              "description" : "Weekly with 3 day trial",
+              "displayName" : "Weekly Trial",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.weekly.trial",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Weekly Trial",
+          "subscriptionGroupID" : "TRIAL_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "SUB_MONTH_TRIAL",
+          "introductoryOffer" : {
+            "internalID" : "TRIAL_MONTH_01",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Monthly with 1 week trial",
+              "displayName" : "Monthly Trial",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.monthly.trial",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Trial",
+          "subscriptionGroupID" : "TRIAL_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "49.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "SUB_YEAR_TRIAL",
+          "introductoryOffer" : {
+            "internalID" : "TRIAL_YEAR_01",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Annual with 1 month trial",
+              "displayName" : "Annual Trial",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.annual.trial",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Annual Trial",
+          "subscriptionGroupID" : "TRIAL_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "id" : "INTRO_GROUP",
+      "localizations" : [
+
+      ],
+      "name" : "Introductory",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "SUB_MONTH_INTRO",
+          "introductoryOffer" : {
+            "displayPrice" : "0.99",
+            "internalID" : "INTRO_MONTH_01",
+            "numberOfPeriods" : 3,
+            "paymentMode" : "payAsYouGo",
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Monthly with intro offer",
+              "displayName" : "Monthly Intro",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.monthly.intro",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Intro",
+          "subscriptionGroupID" : "INTRO_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "59.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "SUB_YEAR_INTRO",
+          "introductoryOffer" : {
+            "displayPrice" : "9.99",
+            "internalID" : "INTRO_YEAR_01",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "payAsYouGo",
+            "subscriptionPeriod" : "P1Y"
+          },
+          "localizations" : [
+            {
+              "description" : "Annual with intro offer",
+              "displayName" : "Annual Intro",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.annual.intro",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Annual Intro",
+          "subscriptionGroupID" : "INTRO_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "id" : "PREMIUM_GROUP",
+      "localizations" : [
+
+      ],
+      "name" : "Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : true,
+          "groupNumber" : 2,
+          "internalID" : "SUB_MONTH_PREMIUM",
+          "introductoryOffer" : {
+            "displayPrice" : "4.99",
+            "internalID" : "PREMIUM_MONTH_INTRO",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "payAsYouGo",
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Premium monthly subscription",
+              "displayName" : "Premium Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "PREMIUM_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "99.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "SUB_YEAR_PREMIUM",
+          "introductoryOffer" : {
+            "internalID" : "PREMIUM_YEAR_TRIAL",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2W"
+          },
+          "localizations" : [
+            {
+              "description" : "Premium annual subscription",
+              "displayName" : "Premium Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mercato.tests.subscription.premium.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Annual",
+          "subscriptionGroupID" : "PREMIUM_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
