@@ -5,12 +5,30 @@ Mercato 1.0.0
 ---------
 
 ### Added
+* Subscription state monitoring for billing retry and grace period (addresses [#6](https://github.com/tikhop/Mercato/issues/6))
+  - `isInBillingRetry(for:)` - Check if subscription is in billing retry state
+  - `isInGracePeriod(for:)` - Check if subscription is in grace period
+  - `renewalState(for:)` - Get current renewal state for a subscription
+  - `subscriptionStatusUpdates` - Direct access to StoreKit 2's subscription status update stream
+  - `allSubscriptionStatuses` - Stream of all subscription group statuses (iOS 17+)
+* Comprehensive product extension methods for subscription details (localizedPrice, localizedPeriod, hasTrial, priceInDay)
+* PurchaseOptionsBuilder for fluent configuration of purchase options
+* PromotionalOffer model for handling subscription offers
+* ProductService with better caching for product fetching
+* PriceFormatter and PeriodFormatter utilities for localized formatting
+* CurrencySymbolsLibrary for comprehensive currency symbol support
+* Example iOS application demonstrating usage
+* Detailed usage documentation in Documentation/Usage.md
+* Support for visionOS platform
 
 ### Updated
+* Migrated to Swift 6.0 tools version while maintaining Swift 5.10 compatibility
+* Reorganized code structure 
+* Enhanced error handling with more specific MercatoError cases
+* Simplified purchase API with automatic option building
+* Enhanced README with comprehensive usage examples
 
-### Fixed
-
-Mercato 0.0.1
+Mercato 0.0.1-0.0.3
 ---------
 
 * Listen for transaction updates. If your app has unfinished transactions, you receive them immediately after the app launches

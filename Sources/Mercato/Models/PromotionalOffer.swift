@@ -1,5 +1,3 @@
-// swift-tools-version: 6.0
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,28 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
+import Foundation
 
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: ["Mercato"],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+extension Mercato {
+    /// Promotional offer for a purchase.
+    public struct PromotionalOffer: Sendable {
+        /// The `id` property of the `SubscriptionOffer` to apply.
+        let offerID: String
+
+        /// The key ID of the private key used to generate `signature`.
+        /// The private key and key ID can be generated on App Store Connect.
+        let keyID: String
+
+        /// The nonce used in `signature`.
+        let nonce: UUID
+
+        /// The cryptographic signature of the offer parameters, generated on your server.
+        let signature: Data
+
+        /// The time the signature was generated in milliseconds since 1970.
+        let timestamp: Int
+    }
+}

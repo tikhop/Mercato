@@ -1,5 +1,3 @@
-// swift-tools-version: 6.0
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,28 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
+import Foundation
 
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: ["Mercato"],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+public struct PeriodFormatter: Sendable {
+    public static var formatter: DateComponentsFormatter {
+        let formatter = DateComponentsFormatter()
+        formatter.maximumUnitCount = 1
+        formatter.unitsStyle = .full
+        formatter.zeroFormattingBehavior = .dropAll
+        return formatter
+    }
+
+    public static func format(unit: NSCalendar.Unit, numberOfUnits: Int) -> String? {
+        var dateComponents = DateComponents()
+        dateComponents.calendar = Calendar.current
+
+        formatter.allowedUnits = [unit]
+
+        switch unit {
+        case .day:
+            dateComponents.setValue(numberOfUnits, for: .day)
+        case .weekOfMonth:
+            dateComponents.setValue(numberOfUnits, for: .weekOfMonth)
+        case .month:
+            dateComponents.setValue(numberOfUnits, for: .month)
+        case .year:
+            dateComponents.setValue(numberOfUnits, for: .year)
+        default:
+            return nil
+        }
+
+        return formatter.string(from: dateComponents)
+    }
+}
+

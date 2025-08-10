@@ -1,19 +1,19 @@
 # options
---swiftversion 5.7
+--swiftversion 6.0
 --self remove # redundantSelf
 --importgrouping testable-bottom # sortedImports
---commas always # trailingCommas
+--commas inline # trailingCommas
 --trimwhitespace always # trailingSpace
 --indent 4 #indent
 --ifdef no-indent #indent
 --indentstrings true #indent
 
---wraparguments after-first # wrapArguments
---wrapparameters after-first # wrapArguments
+--wraparguments before-first # wrapArguments
+--wrapparameters before-first # wrapArguments
 --wrapcollections before-first # wrapArguments
 --wrapconditions after-first # wrapArguments
 --wrapreturntype preserve #wrapArguments
---closingparen same-line # wrapArguments
+--closingparen balanced # wrapArguments
 --wraptypealiases before-first # wrapArguments
 --funcattributes prev-line # wrapAttributes
 --typeattributes prev-line # wrapAttributes
