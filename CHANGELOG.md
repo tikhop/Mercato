@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+Mercato 1.0.1
+---------
+
+### Fixed
+* Compilation issue on WatchOS
+* Example iOS application issue 
+
 Mercato 1.0.0
 ---------
 

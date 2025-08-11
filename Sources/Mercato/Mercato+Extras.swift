@@ -139,7 +139,10 @@ extension Mercato {
     ///
     /// - Note: `PurchaseIntent` objects can help you manage unfinished purchases or gather
     ///         information on user purchase intentions to improve the purchase flow experience.
-    @available(iOS 16.4, macOS 14.4, tvOS 16.4, watchOS 9.4, *)
+    @available(iOS 16.4, macOS 14.4, *)
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    @available(visionOS, unavailable)
     public static var purchaseIntents: PurchaseIntent.PurchaseIntents {
         PurchaseIntent.intents
     }
