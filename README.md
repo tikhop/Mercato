@@ -15,7 +15,7 @@ StoreKit 2 wrapper for In-App Purchases.
 ### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/tikhop/Mercato.git", .upToNextMajor(from: "1.0.0"))
+.package(url: "https://github.com/tikhop/Mercato.git", .upToNextMajor(from: "1.0.1"))
 ```
 
 ## Requirements
