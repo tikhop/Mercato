@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tikhop/Mercato",
       "state" : {
-        "revision" : "51cc7ec0fe7347d4cb92c00f9566d289f276d64c",
-        "version" : "0.0.3"
+        "revision" : "ffcc020f1247d3f12e07d943d780956ec84bd6cf",
+        "version" : "1.0.0"
       }
     }
   ],

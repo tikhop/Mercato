@@ -28,23 +28,21 @@ class ViewController: UIViewController {
     private var storeKitUpdatesTask: Task<Void, Never>?
 
     private func startObservingStoreKitUpdates() {
-        storeKitUpdatesTask = Task.detached(priority: .high) { [weak self] in
+        storeKitUpdatesTask = Task.detached(priority: .high) {
             // First, let's finish unfinished txs
             for await verificationResult in Mercato.unfinishedTransactions {
-                guard let self else { break }
-
-                do {
-                    try await finish(transactionResult: verificationResult)
-                } catch {
-                    print(error)
+                if case .verified(let tx) = verificationResult {
+                    // TODO: Send tx.jsonRepresentation to your server and deliver content to your user.
+                    await tx.finish()
                 }
             }
 
             // Second, subscribe for updates
             for await verificationResult in Mercato.updates {
-                guard let self else { break }
-
-                // TODO: Handle updates, send tx on your backend or just verify and update UI
+                if case .verified(let tx) = verificationResult {
+                    // TODO: Send tx.jsonRepresentation to your server and deliver content to your user.
+                    await tx.finish()
+                }
             }
         }
     }
@@ -81,6 +79,9 @@ class ViewController: UIViewController {
         configureHierarchy()
     }
 
-
+    deinit {
+        storeKitUpdatesTask?.cancel()
+        storeKitUpdatesTask = nil
+    }
 }
 
