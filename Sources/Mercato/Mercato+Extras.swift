@@ -153,21 +153,21 @@ extension Mercato {
     ///                          value.
     /// - Returns: An array of all the products received from the App Store.
     /// - Throws: `MercatoError`
-    public static func retrieveProducts(productIds: Set<String>) async throws (MercatoError) -> [Product] {
+    public static func retrieveProducts(productIds: Set<String>) async throws(MercatoError) -> [Product] {
         try await Mercato.shared.retrieveProducts(productIds: productIds)
     }
 
     /// Whether the user is eligible to have an introductory offer applied to a purchase in this
     /// subscription group.
     /// - Parameter productIds: Set of product ids.
-    public static func isEligibleForIntroOffer(for productIds: Set<String>) async throws (MercatoError) -> Bool {
+    public static func isEligibleForIntroOffer(for productIds: Set<String>) async throws(MercatoError) -> Bool {
         try await shared.isEligibleForIntroOffer(for: productIds)
     }
 
     /// Whether the user is eligible to have an introductory offer applied to a purchase in this
     /// subscription group.
     /// - Parameter productId: The product identifier to check eligibility for.
-    public static func isEligibleForIntroOffer(for productId: String) async throws (MercatoError) -> Bool {
+    public static func isEligibleForIntroOffer(for productId: String) async throws(MercatoError) -> Bool {
         try await shared.isEligibleForIntroOffer(for: productId)
     }
 
@@ -176,7 +176,7 @@ extension Mercato {
     /// - Parameter product: The `Product` to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    public static func isPurchased(_ product: Product) async throws (MercatoError) -> Bool {
+    public static func isPurchased(_ product: Product) async throws(MercatoError) -> Bool {
         try await shared.isPurchased(product)
     }
 
@@ -185,7 +185,7 @@ extension Mercato {
     /// - Parameter productIdentifier: The identifier of the product to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    public static func isPurchased(_ productIdentifier: String) async throws (MercatoError) -> Bool {
+    public static func isPurchased(_ productIdentifier: String) async throws(MercatoError) -> Bool {
         try await shared.isPurchased(productIdentifier)
     }
 
@@ -208,7 +208,7 @@ extension Mercato {
         finishAutomatically: Bool = false,
         appAccountToken: UUID? = nil,
         simulatesAskToBuyInSandbox: Bool = false
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         try await shared.purchase(
             productId: productId,
             promotionalOffer: promotionalOffer,
@@ -238,7 +238,7 @@ extension Mercato {
         finishAutomatically: Bool = false,
         appAccountToken: UUID? = nil,
         simulatesAskToBuyInSandbox: Bool = false
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         try await shared.purchase(
             product: product,
             promotionalOffer: promotionalOffer,
@@ -262,7 +262,7 @@ extension Mercato {
         product: Product,
         options: Set<Product.PurchaseOption>,
         finishAutomatically: Bool
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         try await shared.purchase(product: product, options: options, finishAutomatically: finishAutomatically)
     }
 }

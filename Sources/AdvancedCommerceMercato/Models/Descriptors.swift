@@ -1,5 +1,3 @@
-// swift-tools-version:5.10
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,41 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
+import Foundation
 
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        ),
-        .library(
-            name: "AdvancedCommerceMercato",
-            targets: ["AdvancedCommerceMercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .target(
-            name: "AdvancedCommerceMercato",
-            dependencies: [
-                .target(name: "Mercato")
-            ]
-        ),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: [
-                .target(name: "Mercato"),
-                .target(name: "AdvancedCommerceMercato")
-            ],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+// MARK: - Descriptors
+
+/// The description and display name of the subscription to migrate to that you manage.
+public struct Descriptors: Decodable, Encodable {
+    /// A string you provide that describes a SKU.
+    ///
+    /// [Description](https://developer.apple.com/documentation/appstoreserverapi/description)
+    public var description: String
+
+    /// A string with a product name that you can localize and is suitable for display to customers.
+    ///
+    /// [DisplayName](https://developer.apple.com/documentation/appstoreserverapi/displayname)
+    public var displayName: String
+
+    public init(description: String, displayName: String) {
+        self.description = description
+        self.displayName = displayName
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case description
+        case displayName
+    }
+}
+
+// MARK: Validatable
+
+extension Descriptors: Validatable {
+    public func validate() throws {
+        try ValidationUtils.validateDescription(description)
+        try ValidationUtils.validateDisplayName(displayName)
+    }
+}

@@ -136,13 +136,13 @@ extension Mercato {
 // MARK: - Mercato
 
 public final class Mercato: Sendable {
-    private let productService: ProductService
+    private let productService: any StoreKitProductService
 
     package convenience init() {
         self.init(productService: CachingProductService())
     }
 
-    public init(productService: ProductService) {
+    public init(productService: any StoreKitProductService) {
         self.productService = productService
     }
 
@@ -152,7 +152,7 @@ public final class Mercato: Sendable {
     ///                          value.
     /// - Returns: An array of all the products received from the App Store.
     /// - Throws: `MercatoError`
-    public func retrieveProducts(productIds: Set<String>) async throws (MercatoError) -> [Product] {
+    public func retrieveProducts(productIds: Set<String>) async throws(MercatoError) -> [Product] {
         try await productService.retrieveProducts(productIds: productIds)
     }
 
@@ -162,14 +162,14 @@ public final class Mercato: Sendable {
     ///                          value.
     /// - Returns: An array of all the products received from the App Store.
     /// - Throws: `MercatoError`
-    public func retrieveSubscriptionProducts(productIds: Set<String>) async throws (MercatoError) -> [Product] {
+    public func retrieveSubscriptionProducts(productIds: Set<String>) async throws(MercatoError) -> [Product] {
         try await productService.retrieveProducts(productIds: productIds)
     }
 
     /// Whether the user is eligible to have an introductory offer applied to a purchase in this
     /// subscription group.
     /// - Parameter productIds: Set of product ids.
-    public func isEligibleForIntroOffer(for productIds: Set<String>) async throws (MercatoError) -> Bool {
+    public func isEligibleForIntroOffer(for productIds: Set<String>) async throws(MercatoError) -> Bool {
         let products = try await productService.retrieveProducts(productIds: productIds)
 
         guard let product = products.first else {
@@ -188,7 +188,7 @@ public final class Mercato: Sendable {
     /// Whether the user is eligible to have an introductory offer applied to a purchase in this
     /// subscription group.
     /// - Parameter productId: The product identifier to check eligibility for.
-    public func isEligibleForIntroOffer(for productId: String) async throws (MercatoError) -> Bool {
+    public func isEligibleForIntroOffer(for productId: String) async throws(MercatoError) -> Bool {
         let products = try await productService.retrieveProducts(productIds: [productId])
 
         guard let product = products.first else {
@@ -207,7 +207,7 @@ public final class Mercato: Sendable {
     /// - Parameter product: The `Product` to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    public func isPurchased(_ product: Product) async throws (MercatoError) -> Bool {
+    public func isPurchased(_ product: Product) async throws(MercatoError) -> Bool {
         try await productService.isPurchased(product)
     }
 
@@ -216,7 +216,7 @@ public final class Mercato: Sendable {
     /// - Parameter productIdentifier: The identifier of the product to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    public func isPurchased(_ productIdentifier: String) async throws (MercatoError) -> Bool {
+    public func isPurchased(_ productIdentifier: String) async throws(MercatoError) -> Bool {
         try await productService.isPurchased(productIdentifier)
     }
 
@@ -304,7 +304,7 @@ extension Mercato {
         finishAutomatically: Bool = false,
         appAccountToken: UUID? = nil,
         simulatesAskToBuyInSandbox: Bool = false
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         let products = try await productService.retrieveProducts(productIds: [productId])
 
         guard let product = products.first else {
@@ -339,7 +339,7 @@ extension Mercato {
         finishAutomatically: Bool = false,
         appAccountToken: UUID? = nil,
         simulatesAskToBuyInSandbox: Bool = false
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         let options = PurchaseOptionsBuilder()
             .setQuantity(quantity)
             .setAppAccountToken(appAccountToken)
@@ -363,7 +363,7 @@ extension Mercato {
         product: Product,
         options: Set<Product.PurchaseOption>,
         finishAutomatically: Bool
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         do {
             let result = try await product.purchase(options: options)
 
@@ -383,7 +383,7 @@ extension Mercato {
         _ result: Product.PurchaseResult,
         product: Product,
         finishAutomatically: Bool
-    ) async throws (MercatoError) -> Purchase {
+    ) async throws(MercatoError) -> Purchase {
         switch result {
         case .success(let verification):
             let transaction = try verification.payload
@@ -439,7 +439,7 @@ extension Mercato {
     @available(iOS 15.0, visionOS 1.0, *)
     @available(watchOS, unavailable)
     @available(tvOS, unavailable)
-    public func beginRefundProcess(for productID: String, in displayContext: DisplayContext) async throws (MercatoError) {
+    public func beginRefundProcess(for productID: String, in displayContext: DisplayContext) async throws(MercatoError) {
         guard let result = await Transaction.latest(for: productID) else {
             throw MercatoError.noTransactionForSpecifiedProduct
         }

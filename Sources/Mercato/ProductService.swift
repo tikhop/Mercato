@@ -25,6 +25,7 @@ import StoreKit
 // MARK: - ProductService
 
 public protocol ProductService: Sendable {
+    associatedtype ProductItem
     /// Requests product data from the App Store.
     /// - Parameter identifiers: A set of product identifiers to load from the App Store. If any
     ///                          identifiers are not found, they will be excluded from the return
@@ -32,32 +33,55 @@ public protocol ProductService: Sendable {
     /// - Returns: An array of all the products received from the App Store.
     /// - Throws: `MercatoError`
     ///
-    func retrieveProducts(productIds: Set<String>) async throws (MercatoError) -> [Product]
+    func retrieveProducts(productIds: Set<String>) async throws(MercatoError) -> [ProductItem]
 
+}
+
+
+// MARK: - StoreKitProductService
+
+public protocol StoreKitProductService: ProductService where ProductItem == StoreKit.Product {
     /// Checks if a given product has been purchased.
     ///
     /// - Parameter product: The `Product` to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    func isPurchased(_ product: Product) async throws (MercatoError) -> Bool
+    func isPurchased(_ product: StoreKit.Product) async throws(MercatoError) -> Bool
 
     /// Checks if a product with the given identifier has been purchased.
     ///
     /// - Parameter productIdentifier: The identifier of the product to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    func isPurchased(_ productIdentifier: String) async throws (MercatoError) -> Bool
+    func isPurchased(_ productIdentifier: String) async throws(MercatoError) -> Bool
 }
 
-/// A product service implementation with caching and request deduplication
-package final class CachingProductService: ProductService, @unchecked Sendable {
-    private let lock = DefaultLock()
-    private var cachedProducts: [String: Product] = [:]
-    private var activeFetches: [Set<String>: Task<[Product], Error>] = [:]
 
-    public func retrieveProducts(productIds: Set<String>) async throws (MercatoError) -> [Product] {
+// MARK: - FetchableProduct
+
+public protocol FetchableProduct {
+    var id: String { get }
+
+    static func products(for identifiers: some Collection<String>) async throws -> [Self]
+}
+
+// MARK: - AbstractCachingProductService
+
+public class AbstractCachingProductService<P: Sendable & FetchableProduct>: ProductService, @unchecked Sendable {
+    public typealias ProductItem = P
+
+    internal let lock = DefaultLock()
+    internal var cachedProducts: [String: ProductItem] = [:]
+    internal var activeFetches: [Set<String>: Task<[ProductItem], Error>] = [:]
+
+    public init() { }
+
+    public func retrieveProducts(productIds: Set<String>) async throws(MercatoError) -> [ProductItem] {
         lock.lock()
-        var cached: [Product] = []
+        let cachedProducts = cachedProducts
+        lock.unlock()
+
+        var cached: [ProductItem] = []
         var missingIds = Set<String>()
 
         for id in productIds {
@@ -69,24 +93,28 @@ package final class CachingProductService: ProductService, @unchecked Sendable {
         }
 
         if missingIds.isEmpty {
-            lock.unlock()
             return cached
         }
 
-        if let existingTask = activeFetches[missingIds] {
+        return try await fetchProducts(productIds: missingIds) + cached
+    }
+
+    internal func fetchProducts(productIds: Set<String>) async throws(MercatoError) -> [ProductItem] {
+        lock.lock()
+        if let existingTask = activeFetches[productIds] {
             lock.unlock()
             do {
                 let fetchedProducts = try await existingTask.value
-                return cached + fetchedProducts
+                return fetchedProducts
             } catch {
                 throw MercatoError.wrapped(error: error)
             }
         }
 
-        let fetchTask = Task<[Product], Error> {
-            try await Product.products(for: missingIds)
+        let fetchTask = Task<[ProductItem], Error> {
+            try await ProductItem.products(for: productIds)
         }
-        activeFetches[missingIds] = fetchTask
+        activeFetches[productIds] = fetchTask
         lock.unlock()
 
         do {
@@ -96,24 +124,27 @@ package final class CachingProductService: ProductService, @unchecked Sendable {
             for product in fetchedProducts {
                 cachedProducts[product.id] = product
             }
-            activeFetches.removeValue(forKey: missingIds)
+            activeFetches.removeValue(forKey: productIds)
             lock.unlock()
 
-            return cached + fetchedProducts
+            return fetchedProducts
         } catch {
             lock.lock()
-            activeFetches.removeValue(forKey: missingIds)
+            activeFetches.removeValue(forKey: productIds)
             lock.unlock()
+
             throw MercatoError.wrapped(error: error)
         }
     }
+}
 
+extension AbstractCachingProductService where ProductItem == StoreKit.Product {
     /// Checks if a given product has been purchased.
     ///
     /// - Parameter product: The `Product` to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    public nonisolated func isPurchased(_ product: Product) async throws (MercatoError) -> Bool {
+    public nonisolated func isPurchased(_ product: Product) async throws(MercatoError) -> Bool {
         try await isPurchased(product.id)
     }
 
@@ -122,7 +153,7 @@ package final class CachingProductService: ProductService, @unchecked Sendable {
     /// - Parameter productIdentifier: The identifier of the product to check.
     /// - Returns: A Boolean value indicating whether the product has been purchased.
     /// - Throws: `MercatoError` if the purchase status could not be determined.
-    public nonisolated func isPurchased(_ productIdentifier: String) async throws (MercatoError) -> Bool {
+    public nonisolated func isPurchased(_ productIdentifier: String) async throws(MercatoError) -> Bool {
         guard let result = await Transaction.latest(for: productIdentifier) else {
             return false
         }
@@ -136,4 +167,6 @@ package final class CachingProductService: ProductService, @unchecked Sendable {
     }
 }
 
-
+public typealias CachingProductService = AbstractCachingProductService<StoreKit.Product>
+extension CachingProductService: StoreKitProductService { }
+extension StoreKit.Product: FetchableProduct { }

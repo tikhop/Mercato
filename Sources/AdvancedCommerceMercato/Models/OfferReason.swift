@@ -1,5 +1,3 @@
-// swift-tools-version:5.10
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,41 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
-
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        ),
-        .library(
-            name: "AdvancedCommerceMercato",
-            targets: ["AdvancedCommerceMercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .target(
-            name: "AdvancedCommerceMercato",
-            dependencies: [
-                .target(name: "Mercato")
-            ]
-        ),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: [
-                .target(name: "Mercato"),
-                .target(name: "AdvancedCommerceMercato")
-            ],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+/// The reason for the offer.
+///
+/// [Offer](https://developer.apple.com/documentation/advancedcommerceapi/offer)
+public enum OfferReason: String, Decodable, Encodable, Hashable, Sendable {
+    case acquisition = "ACQUISITION"
+    case winBack = "WIN_BACK"
+    case retention = "RETENTION"
+}

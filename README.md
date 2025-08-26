@@ -124,6 +124,96 @@ if let result = await Mercato.latest(for: productId) {
 try await Mercato.syncPurchases()
 ```
 
+## Advanced Commerce (iOS 18.4+)
+
+Mercato includes support for Advanced Commerce API.
+> This feature requires iOS 18.4+, macOS 15.4+, tvOS 18.4+, watchOS 11.4+, or visionOS 2.4+.
+
+### Purchase with Compact JWS
+
+```swift
+import AdvancedCommerceMercato
+
+// iOS/macOS/tvOS/visionOS - requires UI context
+let purchase = try await AdvancedCommerceMercato.purchase(
+    productId: "com.app.premium",
+    compactJWS: signedJWS,
+    confirmIn: viewController  // UIViewController on iOS, NSWindow on macOS
+)
+
+// watchOS - no UI context needed
+let purchase = try await AdvancedCommerceMercato.purchase(
+    productId: "com.app.premium",
+    compactJWS: signedJWS
+)
+```
+
+### Purchase with Advanced Commerce Data
+
+```swift
+// Direct purchase with raw Advanced Commerce data
+let result = try await AdvancedCommerceMercato.purchase(
+    productId: "com.app.premium",
+    advancedCommerceData: dataFromServer
+)
+```
+
+### Request Validation
+
+All Advanced Commerce request models include built-in validation to ensure data integrity before sending to your server:
+
+```swift
+import AdvancedCommerceMercato
+
+// Create a request
+let request = OneTimeChargeCreateRequest(
+    currency: "USD",
+    item: OneTimeChargeItem(
+        sku: "BOOK_001",
+        displayName: "Digital Book",
+        description: "Premium content",
+        price: 999
+    ),
+    requestInfo: RequestInfo(requestReferenceId: UUID().uuidString),
+    taxCode: "C003-00-2"
+)
+
+// Validate before sending to server
+do {
+    try request.validate()
+    // Request is valid, proceed with encoding and sending
+} catch {
+    print("Validation error: \(error)")
+}
+```
+
+Validation checks include currency codes, tax codes, storefronts, transaction IDs, and required fields.
+
+### Transaction Management
+
+```swift
+// Get latest transaction for a product
+if let result = await AdvancedCommerceMercato.latestTransaction(for: productId) {
+    let transaction = try result.payload
+}
+
+// Current entitlements
+if let entitlements = await AdvancedCommerceMercato.currentEntitlements(for: productId) {
+    for await result in entitlements {
+        // Process active subscriptions
+    }
+}
+
+// All transactions
+if let transactions = await AdvancedCommerceMercato.allTransactions(for: productId) {
+    for await result in transactions {
+        // Process transaction history
+    }
+}
+```
+
+For detailed information about implementing Advanced Commerce, including request signing and supported operations, see [AdvancedCommerce.md](Documentation/AdvancedCommerce.md).
+
 ## Documentation
 
 See [Usage.md](Documentation/Usage.md) for complete documentation.

@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+Mercato 1.1.0
+---------
+
+### Added
+* Advanced Commerce API support 
+  - `AdvancedCommerceMercato` module for working with Advanced Commerce API
+  - Request models for `OneTimeChargeCreateRequest`, `SubscriptionCreateRequest`, `SubscriptionModifyInAppRequest`, and `SubscriptionReactivateInAppRequest`
+  
 Mercato 1.0.1
 ---------
 
