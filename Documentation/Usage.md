@@ -560,6 +560,12 @@ func showSubscriptionManagement(in scene: UIWindowScene) async {
 
 ## Advanced Features
 
+### Advanced Commerce API Support
+
+Mercato provides support for Apple's Advanced Commerce API. The Advanced Commerce functionality is available through a separate `AdvancedCommerceMercato` module.
+
+For detailed implementation guidance and examples, see the [Advanced Commerce API Guide](AdvancedCommerce.md).
+
 ### Price and Period Formatters
 
 Mercato includes built-in formatters for displaying prices and periods correctly:

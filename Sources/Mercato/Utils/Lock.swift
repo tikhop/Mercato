@@ -1,11 +1,15 @@
 import Foundation
 import os
 
+// MARK: - Lock
+
 package protocol Lock: Sendable {
     func lock()
     func unlock()
     func run<T: Sendable>(_ closure: @Sendable () throws -> T) rethrows -> T
 }
+
+// MARK: - DefaultLock
 
 package final class DefaultLock: Lock {
     private nonisolated let defaultLock: Lock = {
@@ -30,6 +34,8 @@ package final class DefaultLock: Lock {
         try defaultLock.run(closure)
     }
 }
+
+// MARK: - OSAUnfairLock
 
 // MIT License
 //
@@ -73,6 +79,8 @@ package final class OSAUnfairLock: Lock {
         }
     }
 }
+
+// MARK: - NSLock + Lock
 
 extension NSLock: Lock {
     public func run<T>(_ closure: @Sendable () throws -> T) rethrows -> T where T : Sendable {

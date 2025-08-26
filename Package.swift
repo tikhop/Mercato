@@ -33,14 +33,27 @@ let package = Package(
         .library(
             name: "Mercato",
             targets: ["Mercato"]
+        ),
+        .library(
+            name: "AdvancedCommerceMercato",
+            targets: ["AdvancedCommerceMercato"]
         )
     ],
     dependencies: [],
     targets: [
         .target(name: "Mercato"),
+        .target(
+            name: "AdvancedCommerceMercato",
+            dependencies: [
+                .target(name: "Mercato")
+            ]
+        ),
         .testTarget(
             name: "MercatoTests",
-            dependencies: ["Mercato"],
+            dependencies: [
+                .target(name: "Mercato"),
+                .target(name: "AdvancedCommerceMercato")
+            ],
             resources: [
                 .copy("Mercato.storekit")
             ]

@@ -1,5 +1,3 @@
-// swift-tools-version:5.10
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,41 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
+// MARK: - SubscriptionModifyRemoveItem
 
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        ),
-        .library(
-            name: "AdvancedCommerceMercato",
-            targets: ["AdvancedCommerceMercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .target(
-            name: "AdvancedCommerceMercato",
-            dependencies: [
-                .target(name: "Mercato")
-            ]
-        ),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: [
-                .target(name: "Mercato"),
-                .target(name: "AdvancedCommerceMercato")
-            ],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+/// An item for removing from Advanced Commerce subscription modifications.
+///
+/// [SubscriptionModifyRemoveItem](https://developer.apple.com/documentation/advancedcommerceapi/SubscriptionModifyRemoveItem)
+public struct SubscriptionModifyRemoveItem: Decodable, Encodable {
+
+    /// The SKU identifier for the item.
+    ///
+    /// [SKU](https://developer.apple.com/documentation/advancedcommerceapi/sku)
+    public var sku: String
+
+    init(sku: String) {
+        self.sku = sku
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case sku = "SKU"
+    }
+}
+
+// MARK: Validatable
+
+extension SubscriptionModifyRemoveItem: Validatable {
+    public func validate() throws {
+        try ValidationUtils.validateSku(sku)
+    }
+}

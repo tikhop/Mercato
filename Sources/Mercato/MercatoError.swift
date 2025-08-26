@@ -50,6 +50,8 @@ public enum MercatoError: Error, Sendable {
 
     case noSubscriptionInTheProduct
 
+    case productNotFound(String)
+
     /// An unknown error occurred.
     case unknown(error: Error?)
 }
@@ -77,10 +79,12 @@ extension MercatoError: LocalizedError {
             return "This error happens when product doesn't have subsciption"
         case .unknown(error: let error):
             return "Unknown error: \(String(describing: error)), Description: \(error?.localizedDescription ?? "Description is missing")"
+        case .productNotFound(let id):
+            return "This error happens when product for id = \(id) not found"
         }
     }
 
-    static func wrapped(error: any Error) -> MercatoError {
+    package static func wrapped(error: any Error) -> MercatoError {
         if let mercatoError = error as? MercatoError {
             return mercatoError
         } else if let storeKitError = error as? StoreKitError {

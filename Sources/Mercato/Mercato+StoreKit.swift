@@ -252,8 +252,8 @@ extension Product.SubscriptionOffer {
 }
 
 extension VerificationResult<Transaction> {
-    var payload: Transaction {
-        get throws (MercatoError) {
+    package var payload: Transaction {
+        get throws(MercatoError) {
             switch self {
             case .verified(let payload):
                 return payload
@@ -261,5 +261,18 @@ extension VerificationResult<Transaction> {
                 throw MercatoError.failedVerification(payload: payload, error: error)
             }
         }
+    }
+}
+
+extension Product.PurchaseOption {
+    private enum Constants {
+        static let kAdvancedCommerceDataKey = "advancedCommerceData"
+    }
+
+    public static func advancedCommerceData(_ data: Data) -> Product.PurchaseOption {
+        Product.PurchaseOption.custom(
+            key: Constants.kAdvancedCommerceDataKey,
+            value: data
+        )
     }
 }

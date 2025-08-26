@@ -1,5 +1,3 @@
-// swift-tools-version:5.10
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,41 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
+import Foundation
 
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        ),
-        .library(
-            name: "AdvancedCommerceMercato",
-            targets: ["AdvancedCommerceMercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .target(
-            name: "AdvancedCommerceMercato",
-            dependencies: [
-                .target(name: "Mercato")
-            ]
-        ),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: [
-                .target(name: "Mercato"),
-                .target(name: "AdvancedCommerceMercato")
-            ],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+// MARK: - Offer
+
+/// A discount offer for an auto-renewable subscription.
+///
+/// [Offer](https://developer.apple.com/documentation/advancedcommerceapi/offer)
+public struct Offer: Codable {
+
+    /// The period of the offer.
+    public var period: OfferPeriod
+
+    /// The number of periods the offer is active.
+    public var periodCount: Int32
+
+    /// The offer price, in milliunits.
+    ///
+    /// [Price](https://developer.apple.com/documentation/advancedcommerceapi/price)
+    public var price: Int64
+
+    /// The reason for the offer.
+    public var reason: OfferReason
+
+    public init(
+        period: OfferPeriod,
+        periodCount: Int32,
+        price: Int64,
+        reason: OfferReason
+    ) {
+        self.period = period
+        self.periodCount = periodCount
+        self.price = price
+        self.reason = reason
+    }
+
+}
+
+// MARK: Validatable
+
+extension Offer: Validatable {
+    public func validate() throws {
+        try ValidationUtils.validatePrice(price)
+    }
+}

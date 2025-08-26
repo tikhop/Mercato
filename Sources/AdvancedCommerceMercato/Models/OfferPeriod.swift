@@ -1,5 +1,3 @@
-// swift-tools-version:5.10
-
 // MIT License
 //
 // Copyright (c) 2021-2025 Pavel T
@@ -22,41 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import PackageDescription
-
-let package = Package(
-    name: "Mercato",
-    platforms: [
-        .iOS("15.4"), .tvOS("17.0"), .watchOS("10.0"), .macOS("13.0"), .visionOS(.v1)
-    ],
-    products: [
-        .library(
-            name: "Mercato",
-            targets: ["Mercato"]
-        ),
-        .library(
-            name: "AdvancedCommerceMercato",
-            targets: ["AdvancedCommerceMercato"]
-        )
-    ],
-    dependencies: [],
-    targets: [
-        .target(name: "Mercato"),
-        .target(
-            name: "AdvancedCommerceMercato",
-            dependencies: [
-                .target(name: "Mercato")
-            ]
-        ),
-        .testTarget(
-            name: "MercatoTests",
-            dependencies: [
-                .target(name: "Mercato"),
-                .target(name: "AdvancedCommerceMercato")
-            ],
-            resources: [
-                .copy("Mercato.storekit")
-            ]
-        )
-    ]
-)
+/// The period of the offer.
+///
+/// [Offer](https://developer.apple.com/documentation/advancedcommerceapi/offer)
+public enum OfferPeriod: String, Decodable, Encodable, Hashable, Sendable {
+    case p3d = "P3D"
+    case p1w = "P1W"
+    case p2w = "P2W"
+    case p1m = "P1M"
+    case p2m = "P2M"
+    case p3m = "P3M"
+    case p6m = "P6M"
+    case p9m = "P9M"
+    case p1y = "P1Y"
+}
