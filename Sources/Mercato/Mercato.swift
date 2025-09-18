@@ -138,7 +138,7 @@ extension Mercato {
 public final class Mercato: Sendable {
     private let productService: any StoreKitProductService
 
-    package convenience init() {
+    public convenience init() {
         self.init(productService: CachingProductService())
     }
 
