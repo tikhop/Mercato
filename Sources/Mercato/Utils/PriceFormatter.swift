@@ -25,14 +25,10 @@ import Foundation
 @inline(__always)
 private let kDefaultFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
-    formatter.locale = .current
-    formatter.numberStyle = .currency
-    formatter.minimumFractionDigits = 0
-    formatter.maximumFractionDigits = 2
     return formatter
 }()
 
-extension Decimal {
+public extension Decimal {
     func formattedPrice(
         locale: Locale = .current,
         currencyCode: String,
@@ -40,11 +36,15 @@ extension Decimal {
     ) -> String? {
         var formatter = kDefaultFormatter
 
+        formatter.numberStyle = .currency
+
         if locale != .current {
             formatter = formatter.copy() as! NumberFormatter
             formatter.locale = locale
+        } else {
+            formatter.locale = .current
         }
-
+        
         formatter.currencyCode = currencyCode
 
         // Set native currency symbol if available
@@ -59,5 +59,44 @@ extension Decimal {
         }
 
         return formatter.string(from: NSDecimalNumber(decimal: self))
+    }
+
+
+    @available(iOS 16, *)
+    func formattedPrice(
+        currencyStyle: Decimal.FormatStyle.Currency,
+        locale: Locale = .current,
+        applyingRounding: Bool = false
+    ) -> String {
+        var style = currencyStyle.locale(locale)
+
+        if applyingRounding {
+            style = style
+                .precision(.fractionLength(0))
+                .rounded(rule: .up)
+        }
+
+        let formatted = self.formatted(style)
+
+        let originalCurrencyCode = currencyStyle.locale.currency?.identifier ?? ""
+
+        if let originalCurrencyCode = currencyStyle.locale.currency?.identifier,
+           let customSymbol = CurrencySymbolsLibrary.shared.symbol(for: originalCurrencyCode),
+           !originalCurrencyCode.isEmpty {
+            var result = formatted.replacingOccurrences(of: originalCurrencyCode, with: customSymbol)
+
+            if result.hasPrefix(customSymbol) {
+                let symbolEndIndex = result.index(result.startIndex, offsetBy: customSymbol.count)
+
+                // Remove any whitespace characters after the symbol
+                while result.indices.contains(symbolEndIndex) && result[symbolEndIndex].isWhitespace {
+                    result.remove(at: symbolEndIndex)
+                }
+            }
+
+            return result
+        }
+
+        return formatted
     }
 }

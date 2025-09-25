@@ -78,6 +78,18 @@ enum PriceFormatterTests {
             #expect(formatted?.contains("1,000") == true || formatted?.contains("1000") == true)
         }
 
+        @Test("Formats price with RUB currency")
+        func testRUBFormatting() {
+            let price = Decimal(499.99)
+            let formatted = price.formattedPrice(
+                locale: .testRU,
+                currencyCode: TestCurrencies.rub
+            )
+
+            #expect(formatted?.contains("₽") == true)
+            #expect(formatted?.contains("499") == true)
+        }
+
         @Test("Applies rounding mode when specified")
         func testRoundingMode() {
             let price = Decimal(9.49)
@@ -108,7 +120,8 @@ enum PriceFormatterTests {
             let price = Decimal(0)
             let formatted = price.formattedPrice(
                 locale: .testUS,
-                currencyCode: TestCurrencies.usd
+                currencyCode: TestCurrencies.usd,
+                applyingRounding: true
             )
 
             #expect(formatted == "$0")
@@ -153,6 +166,222 @@ enum PriceFormatterTests {
         }
     }
 
+    @Suite("Decimal.formattedPrice with FormatStyle.Currency")
+    struct FormattedPriceWithCurrencyStyleTests {
+
+        @available(iOS 16, *)
+        @Test("Formats price with USD currency")
+        func testUSDFormatting() {
+            let price = Decimal(9.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted == "$9.99")
+        }
+
+        @available(iOS 16, *)
+        @Test("Formats price with EUR currency")
+        func testEURFormatting() {
+            let price = Decimal(19.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.eur, locale: .testFR)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testFR
+            )
+
+            #expect(formatted.contains("19,99") == true)
+            #expect(formatted.contains("€") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Formats price with GBP currency")
+        func testGBPFormatting() {
+            let price = Decimal(29.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.gbp, locale: .testUK)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUK
+            )
+
+            #expect(formatted.contains("£") == true)
+            #expect(formatted.contains("29.99") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Formats price with JPY currency (no decimals)")
+        func testJPYFormatting() {
+            let price = Decimal(1000)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.jpy, locale: .testJP)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testJP
+            )
+
+            #expect(formatted.contains("¥") == true || formatted.contains("￥") == true)
+            #expect(formatted.contains("1,000") == true || formatted.contains("1000") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Formats price with RUB currency")
+        func testRUBFormatting() {
+            let price = Decimal(499.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.rub, locale: .testRU)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testRU
+            )
+
+            #expect(formatted.contains("₽") == true)
+            #expect(formatted.contains("499") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Formats price with RUB currency and us locale")
+        func testRUBUsFormatting() {
+            let price = Decimal(499.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.rub, locale: .testRU)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted.contains("₽") == true)
+            #expect(formatted.contains("499") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Applies rounding mode when specified")
+        func testRoundingMode() {
+            let price = Decimal(9.49)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS,
+                applyingRounding: true
+            )
+
+            #expect(formatted == "$10")
+        }
+
+        @available(iOS 16, *)
+        @Test("Does not apply rounding by default")
+        func testNoRoundingByDefault() {
+            let price = Decimal(9.49)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS,
+                applyingRounding: false
+            )
+
+            #expect(formatted == "$9.49")
+        }
+
+        @available(iOS 16, *)
+        @Test("Handles zero price")
+        func testZeroPrice() {
+            let price = Decimal(0)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS,
+                applyingRounding: true
+            )
+
+            #expect(formatted == "$0")
+        }
+
+        @available(iOS 16, *)
+        @Test("Handles large prices")
+        func testLargePrice() {
+            let price = Decimal(999999.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted.contains("999") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Handles negative prices")
+        func testNegativePrice() {
+            let price = Decimal(-9.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted.contains("9.99") == true)
+        }
+
+        @available(iOS 16, *)
+        @Test("Uses currency symbol from CurrencySymbolsLibrary if available")
+        func testCustomCurrencySymbol() {
+            let price = Decimal(9.99)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: "BTC", locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted != "")
+        }
+
+        @available(iOS 16, *)
+        @Test("Handles very small decimal values")
+        func testVerySmallDecimals() {
+            let price = Decimal(0.01)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted == "$0.01")
+        }
+
+        @available(iOS 16, *)
+        @Test("Handles fractional cents with rounding")
+        func testFractionalCentsRounding() {
+            let price = Decimal(9.994)
+            let currencyStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let formatted = price.formattedPrice(
+                currencyStyle: currencyStyle,
+                locale: .testUS
+            )
+
+            #expect(formatted == "$9.99")
+        }
+
+        @available(iOS 16, *)
+        @Test("Handles different locale number formats")
+        func testDifferentLocaleFormats() {
+            let price = Decimal(1234.56)
+
+            let germanStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.eur, locale: .testDE)
+            let germanFormatted = price.formattedPrice(
+                currencyStyle: germanStyle,
+                locale: .testDE
+            )
+
+            #expect(germanFormatted.contains("1.234") == true || germanFormatted.contains("1234") == true)
+            #expect(germanFormatted.contains(",56") == true || germanFormatted.contains(".56") == true)
+
+            let usStyle = Decimal.FormatStyle.Currency(code: TestCurrencies.usd, locale: .testUS)
+            let usFormatted = price.formattedPrice(
+                currencyStyle: usStyle,
+                locale: .testUS
+            )
+            #expect(usFormatted.contains("1,234.56") == true || usFormatted.contains("1234.56") == true)
+        }
+    }
+    
     @Suite("Edge Cases")
     struct EdgeCaseTests {
 
@@ -188,6 +417,7 @@ enum PriceFormatterTests {
                 locale: .testDE,
                 currencyCode: TestCurrencies.eur
             )
+
             #expect(germanFormatted?.contains("1.234") == true || germanFormatted?.contains("1234") == true)
             #expect(germanFormatted?.contains(",56") == true || germanFormatted?.contains(".56") == true)
 
