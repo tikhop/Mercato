@@ -153,6 +153,7 @@ extension Locale {
     static let testFR = Locale(identifier: "fr_FR")
     static let testDE = Locale(identifier: "de_DE")
     static let testJP = Locale(identifier: "ja_JP")
+    static let testRU = Locale(identifier: "ru_RU")
 }
 
 // MARK: - TestCurrencies
@@ -164,4 +165,5 @@ enum TestCurrencies {
     static let jpy = "JPY"
     static let cad = "CAD"
     static let aud = "AUD"
+    static let rub = "RUB"
 }
